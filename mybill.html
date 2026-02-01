@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cash receipt - ระบบบิลเงินสด</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1048/1048953.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        :root { --theme-color: #2c3e50; --bg-color: #f3f4f6; }
+        body { font-family: 'Sarabun', 'Tahoma', sans-serif; background-color: var(--bg-color); margin: 0; padding: 10px; color: #333; display: flex; flex-direction: column; align-items: center; }
+        .controls { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; width: 100%; justify-content: center; padding-bottom: 5px; }
+        button { padding: 8px 12px; border: none; border-radius: 20px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-weight: bold; font-size: 14px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-save { background-color: #198754; color: white; }
+        .btn-history { background-color: #ffc107; color: #000; }
+        .btn-export { background-color: #0d6efd; color: white; }
+        .btn-clear { background-color: #dc3545; color: white; }
+        .btn-add { background-color: var(--theme-color); color: white; width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; }
+        .bill-paper { background: white; width: 100%; max-width: 400px; padding: 25px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; border-top: 6px solid var(--theme-color); }
+        input::placeholder, textarea::placeholder { color: #ccc; font-style: italic; font-size: 0.8em;}
+        .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', 'Tahoma', sans-serif; outline: none; }
+        .editable-input:focus { background: #f0f8ff; }
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .shop-info { width: 65%; display: flex; flex-direction: column; }
+        .shop-name { font-size: 1.4rem; font-weight: 700; color: var(--theme-color); margin-bottom: 4px; }
+        .shop-addr { font-size: 0.8rem; color: #444; min-height: 4.5em; line-height: 1.4; resize: none; overflow: hidden; }
+        .bill-meta { text-align: right; width: 35%; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .meta-group { font-size: 0.75rem; color: var(--theme-color); display: flex; justify-content: flex-end; align-items: baseline; width: 100%; white-space: nowrap; }
+        .meta-input { width: 80px; border: none; border-bottom: 1px dotted var(--theme-color); text-align: center; font-size: 0.9rem; color: #000; font-weight: 600; background: transparent; }
+        .customer-info { margin-bottom: 10px; }
+        .input-row { display: flex; align-items: baseline; margin-bottom: 6px; font-size: 0.9rem; }
+        .input-row label { color: var(--theme-color); font-weight: 600; min-width: 60px; }
+        .input-row input { flex: 1; border: none; border-bottom: 1px dotted #ccc; padding: 0 5px; outline: none; font-size: 0.95rem; width: 100%; background: transparent; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 5px; margin-top: 10px; }
+        th { background-color: #eee; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 6px 2px; font-size: 0.85rem; text-align: center; }
+        td { border-left: 1px solid var(--theme-color); border-right: 1px solid var(--theme-color); border-bottom: 1px solid #ddd; padding: 6px 4px; }
+        .footer-layout { display: flex; margin-top: 15px; justify-content: space-between; }
+        .payment-text { width: 100%; height: 80px; border: 1px dashed #ccc; border-radius: 4px; padding: 5px; font-size: 0.75rem; resize: none; background: #fafafa; }
+        .total-line { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; color: var(--theme-color); background-color: #eee; padding: 8px 10px; border-radius: 4px; border: 1px solid #ccc; }
+        .collector-row { margin-top: 25px; text-align: center; }
+        .collector-input { border: none; border-bottom: 1px dotted #000; width: 200px; text-align: center; background: transparent; }
+        .credit-text { text-align: center; font-size: 0.7rem; color: #aaa; margin-top: 30px; line-height: 1.5; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        .modal-content { background: white; margin: 20% auto; padding: 20px; width: 90%; max-width: 350px; border-radius: 8px; max-height: 60vh; overflow-y: auto; }
+        #snapshot-container { position: absolute; top: -9999px; left: -9999px; width: 400px; background: white; }
+        .del-btn { color: red; cursor: pointer; display: none; margin-left:4px;}
+        tr:hover .del-btn { display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button class="btn-save" onclick="saveBill()">💾 บันทึก</button>
+        <button class="btn-history" onclick="openHistory()">📜 ประวัติ</button>
+        <button class="btn-export" onclick="exportImage()">📸 รูปภาพ</button>
+        <button class="btn-clear" onclick="createNew()">📄 ใหม่</button>
+    </div>
+
+    <div id="billEditor" class="bill-paper">
+        <div class="header-section">
+            <div class="shop-info">
+                <input type="text" class="editable-input shop-name" id="shopName" placeholder="แตะใส่ชื่อร้านของคุณ" onchange="saveShopInfo()">
+                <textarea class="editable-input shop-addr" id="shopAddr" placeholder="ที่อยู่ร้าน / เบอร์โทร..." onchange="saveShopInfo()"></textarea>
+            </div>
+            <div class="bill-meta">
+                <div class="meta-group"><span>เล่มที่</span><input type="text" class="meta-input" id="bookNo" readonly value="001"></div>
+                <div class="meta-group"><span>เลขที่</span><input type="text" class="meta-input" id="billNo" readonly placeholder="Auto"></div>
+            </div>
+        </div>
+
+        <div class="customer-info">
+            <div class="input-row"><label>นามลูกค้า</label><input type="text" id="custName" class="editable-input"></div>
+            <div class="input-row"><label>ที่อยู่</label><input type="text" id="custAddr" class="editable-input"></div>
+            <div class="input-row"><label>วันที่</label><input type="date" id="billDate" class="editable-input"></div>
+        </div>
+
+        <table>
+            <thead><tr><th style="width:15%">จำนวน</th><th style="width:50%">รายการ</th><th style="width:15%">หน่วยละ</th><th style="width:20%">รวมเงิน</th></tr></thead>
+            <tbody id="itemsBody"></tbody>
+        </table>
+        <button id="btnAdd" class="btn-add" onclick="addRow()">+ เพิ่มรายการ</button>
+
+        <div class="footer-layout">
+            <div style="width:45%"><textarea id="paymentInfo" class="payment-text" placeholder="เลขบัญชี / ข้อมูลชำระเงิน" onchange="saveShopInfo()"></textarea></div>
+            <div style="width:50%">
+                <div class="total-line"><span style="font-size:0.8rem">รวม</span><span id="grandTotal">0.00</span></div>
+                <div id="bahtText" style="font-size:0.65rem; text-align:right; color:#666; margin-top:5px;">( - ศูนย์บาทถ้วน - )</div>
+            </div>
+        </div>
+
+        <div class="collector-row">
+            <input type="text" class="collector-input" placeholder="( ผู้รับเงิน )"><br>
+            <span style="font-size: 0.8rem;">ผู้รับเงิน / Collector</span>
+        </div>
+
+        <div class="credit-text">
+            Cash receipt App | Version 1.0.0<br>
+            Developed by Gemini & Ton7788
+        </div>
+    </div>
+
+    <div id="snapshot-container"></div>
+    <div id="historyModal" class="modal"><div class="modal-content"><h3 style="margin:0 0 15px 0">ประวัติบิล</h3><div id="historyList"></div><button onclick="document.getElementById('historyModal').style.display='none'" style="margin-top:15px; width:100%; background:#ccc;">ปิด</button></div></div>
+
+    <script>
+        let currentBillId = null;
+        const S_HIST = 'cash_receipt_hist', S_CONF = 'cash_receipt_conf', S_CNT = 'cash_receipt_cnt', S_PRE = 'cash_receipt_pre', S_SEQ = 'cash_receipt_seq';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('billDate').valueAsDate = new Date();
+            loadShopInfo();
+            generateIdsDisplay();
+            addRow();
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        });
+
+        function saveShopInfo() {
+            const config = { name: document.getElementById('shopName').value, addr: document.getElementById('shopAddr').value, payment: document.getElementById('paymentInfo').value };
+            localStorage.setItem(S_CONF, JSON.stringify(config));
+        }
+
+        function loadShopInfo() {
+            const config = JSON.parse(localStorage.getItem(S_CONF));
+            if (config) {
+                document.getElementById('shopName').value = config.name || '';
+                document.getElementById('shopAddr').value = config.addr || '';
+                document.getElementById('paymentInfo').value = config.payment || '';
+            }
+        }
+
+        function addRow(data = {}) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align:center"><input type="number" class="editable-input qty" style="text-align:center" value="${data.qty||''}" onkeyup="calcTotal()"></td>
+                <td><div style="display:flex"><input type="text" class="editable-input desc" value="${data.desc||''}"><span class="del-btn" onclick="this.closest('tr').remove();calcTotal()">×</span></div></td>
+                <td style="text-align:right"><input type="number" class="editable-input price" style="text-align:right" value="${data.price||''}" onkeyup="calcTotal()"></td>
+                <td style="text-align:right"><span class="row-total">${data.total||''}</span></td>
+            `;
+            document.getElementById('itemsBody').appendChild(tr);
+        }
+
+        function calcTotal() {
+            let total = 0;
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const q = parseFloat(row.querySelector('.qty').value) || 0, p = parseFloat(row.querySelector('.price').value) || 0, sum = q * p;
+                row.querySelector('.row-total').innerText = sum > 0 ? sum.toFixed(2) : '';
+                total += sum;
+            });
+            document.getElementById('grandTotal').innerText = total.toFixed(2);
+            document.getElementById('bahtText').innerText = `( ${ThaiBaht(total)} )`;
+        }
+
+        function generateIdsDisplay() {
+            if (currentBillId) return;
+            let totalSaved = parseInt(localStorage.getItem(S_CNT)) || 0;
+            document.getElementById('bookNo').value = String(Math.floor(totalSaved / 20) + 1).padStart(3, '0');
+            const d = new Date(), pre = `${(d.getFullYear()+543).toString().slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}`;
+            let curSeq = (localStorage.getItem(S_PRE) === pre) ? parseInt(localStorage.getItem(S_SEQ)) || 0 : 0;
+            document.getElementById('billNo').value = `${pre}-${String(curSeq + 1).padStart(3, '0')}`;
+        }
+
+        function saveBill() {
+            const items = [];
+            document.querySelectorAll('#itemsBody tr').forEach(r => items.push({ qty: r.querySelector('.qty').value, desc: r.querySelector('.desc').value, price: r.querySelector('.price').value, total: r.querySelector('.row-total').innerText }));
+            if (!currentBillId) {
+                currentBillId = Date.now();
+                localStorage.setItem(S_CNT, (parseInt(localStorage.getItem(S_CNT)) || 0) + 1);
+                const d = new Date(), pre = `${(d.getFullYear()+543).toString().slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}`;
+                let curSeq = (localStorage.getItem(S_PRE) === pre) ? parseInt(localStorage.getItem(S_SEQ)) || 0 : 0;
+                curSeq++;
+                localStorage.setItem(S_PRE, pre); localStorage.setItem(S_SEQ, curSeq);
+                document.getElementById('billNo').value = `${pre}-${String(curSeq).padStart(3, '0')}`;
+            }
+            const billData = { id: currentBillId, bookNo: document.getElementById('bookNo').value, billNo: document.getElementById('billNo').value, date: document.getElementById('billDate').value, custName: document.getElementById('custName').value, custAddr: document.getElementById('custAddr').value, items: items, total: document.getElementById('grandTotal').innerText, shopName: document.getElementById('shopName').value, shopAddr: document.getElementById('shopAddr').value, paymentInfo: document.getElementById('paymentInfo').value };
+            let history = JSON.parse(localStorage.getItem(S_HIST)) || [];
+            history = history.filter(b => b.id !== currentBillId); history.unshift(billData);
+            localStorage.setItem(S_HIST, JSON.stringify(history));
+            alert("บันทึกสำเร็จ!"); generateIdsDisplay();
+        }
+
+        function openHistory() {
+            const history = JSON.parse(localStorage.getItem(S_HIST)) || [];
+            const list = document.getElementById('historyList');
+            list.innerHTML = history.length ? '' : '<p style="text-align:center">ไม่มีประวัติ</p>';
+            history.forEach(b => {
+                const div = document.createElement('div');
+                div.style.cssText = "display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee; align-items:center";
+                div.innerHTML = `<div onclick='loadBill(${JSON.stringify(b).replace(/'/g, "&#39;")})' style="cursor:pointer; flex:1"><b>${b.billNo}</b> <small>(${b.date})</small><br>${b.custName || '-'} | ${b.total}.-</div><button onclick="deleteBill(${b.id})" style="background:#ffebee; color:red; border:1px solid red; padding:4px 8px; border-radius:4px">ลบ</button>`;
+                list.appendChild(div);
+            });
+            document.getElementById('historyModal').style.display = 'block';
+        }
+
+        function loadBill(b) {
+            document.getElementById('historyModal').style.display = 'none';
+            currentBillId = b.id;
+            document.getElementById('shopName').value = b.shopName || ""; document.getElementById('shopAddr').value = b.shopAddr || ""; document.getElementById('paymentInfo').value = b.paymentInfo || "";
+            document.getElementById('bookNo').value = b.bookNo; document.getElementById('billNo').value = b.billNo; document.getElementById('billDate').value = b.date;
+            document.getElementById('custName').value = b.custName; document.getElementById('custAddr').value = b.custAddr;
+            document.getElementById('itemsBody').innerHTML = ''; b.items.forEach(item => addRow(item));
+            calcTotal();
+        }
+
+        function deleteBill(id) {
+            if(!confirm("ลบบิลนี้?")) return;
+            let history = JSON.parse(localStorage.getItem(S_HIST)) || [];
+            history = history.filter(b => b.id !== id);
+            localStorage.setItem(S_HIST, JSON.stringify(history));
+            openHistory();
+        }
+
+        function createNew() {
+            if(confirm('สร้างบิลใหม่?')) { currentBillId = null; document.getElementById('custName').value = ''; document.getElementById('custAddr').value = ''; document.getElementById('itemsBody').innerHTML = ''; addRow(); calcTotal(); generateIdsDisplay(); }
+        }
+
+        function exportImage() {
+            if (typeof html2canvas === 'undefined') { alert("ต้องใช้เน็ตเพื่อโหลดตัวสร้างรูป"); return; }
+            const source = document.getElementById('billEditor');
+            const container = document.getElementById('snapshot-container');
+            container.innerHTML = '';
+            const clone = source.cloneNode(true);
+            clone.querySelectorAll('button, .del-btn, .btn-add').forEach(b => b.remove());
+            clone.querySelectorAll('input, textarea').forEach(input => {
+                const span = document.createElement('span');
+                span.style.cssText = window.getComputedStyle(input).cssText;
+                span.style.border = 'none'; span.style.background = 'transparent'; span.style.padding = '0'; span.style.whiteSpace = 'pre-wrap';
+                if (getComputedStyle(input).borderBottomStyle !== 'none') span.style.borderBottom = getComputedStyle(input).borderBottom;
+                span.innerText = input.value || ''; input.parentNode.replaceChild(span, input);
+            });
+            container.appendChild(clone);
+            html2canvas(clone, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+                const link = document.createElement('a'); link.download = `Bill-${document.getElementById('billNo').value}.png`;
+                link.href = canvas.toDataURL(); link.click(); container.innerHTML = '';
+            });
+        }
+
+        function ThaiBaht(n) {
+            if (!n) return "ศูนย์บาทถ้วน";
+            const nums = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"], units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+            let [baht, satang] = n.toFixed(2).split('.'), text = "";
+            const convert = (str, isBaht) => {
+                let res = "";
+                for (let i = 0; i < str.length; i++) {
+                    let num = parseInt(str[i]), uIdx = str.length - i - 1;
+                    if (num === 0) continue;
+                    if (uIdx === 1 && num === 2) res += "ยี่";
+                    else if (uIdx === 1 && num === 1) res += "";
+                    else if (uIdx === 0 && num === 1 && str.length > 1) res += "เอ็ด";
+                    else res += nums[num];
+                    res += units[uIdx];
+                }
+                return res + (isBaht ? "บาท" : "สตางค์");
+            };
+            if (parseInt(baht) > 0) text += convert(baht, true);
+            if (parseInt(satang) > 0) text += convert(satang, false); else text += "ถ้วน";
+            return text;
+        }
+    </script>
+</body>
+</html>
