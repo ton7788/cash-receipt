@@ -3,7 +3,7 @@ const CACHE_NAME = 'cash-receipt-v1.0.1';
 
 // รายการไฟล์ที่แอปจะโหลดไปเก็บไว้ในเครื่องเพื่อใช้ตอนไม่มีเน็ต
 const assets = [
-  './mybill.html',
+  './index.html',
   './manifest.json',
   './icon.png', // ตรวจสอบว่าชื่อไฟล์ไอคอนของคุณตรงกับชื่อนี้
   'https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap',
@@ -38,4 +38,5 @@ self.addEventListener('fetch', e => {
       return response || fetch(e.request);
     })
   );
+
 });
