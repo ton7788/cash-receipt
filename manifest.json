@@ -2,7 +2,7 @@
   "name": "Cash receipt",
   "short_name": "CashReceipt",
   "description": "Simple offline billing system",
-  "start_url": "mybill.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c3e50",
@@ -14,4 +14,5 @@
       "purpose": "any maskable"
     }
   ]
+
 }
