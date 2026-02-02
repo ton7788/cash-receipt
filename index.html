@@ -11,44 +11,79 @@
     <style>
         :root { --theme-color: #2c3e50; --bg-color: #f3f4f6; }
         body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-color); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Controls */
         .controls { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; width: 100%; justify-content: center; padding-bottom: 5px; }
-        button { padding: 8px 12px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: 'Sarabun'; }
         .btn-save { background-color: #198754; color: white; }
         .btn-history { background-color: #ffc107; color: #000; }
         .btn-export { background-color: #0d6efd; color: white; }
         .btn-clear { background-color: #dc3545; color: white; }
         .btn-add { background-color: var(--theme-color); color: white; width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; }
         .btn-csv { background-color: #157347; color: white; width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; }
+
+        /* Bill Layout */
+        .bill-paper { 
+            background: white; 
+            width: 100%; 
+            max-width: 450px; 
+            padding: 30px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            position: relative; 
+            box-sizing: border-box; 
+            border-top: 8px solid var(--theme-color);
+            line-height: 1.4;
+        }
         
-        .bill-paper { background: white; width: 100%; max-width: 400px; padding: 25px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; border-top: 6px solid var(--theme-color); }
-        .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', sans-serif; outline: none; }
+        .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', sans-serif; outline: none; padding: 2px 0; }
         
-        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .shop-info { width: 65%; }
-        .shop-name { font-size: 1.4rem; font-weight: 700; color: var(--theme-color); margin-bottom: 5px; }
-        .shop-addr { font-size: 0.8rem; color: #444; min-height: 4.5em; line-height: 1.4; resize: none; width: 100%; white-space: pre-wrap; }
-        .bill-meta { text-align: right; width: 35%; font-size: 0.8rem; color: var(--theme-color); display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-        .meta-row { display: flex; align-items: center; justify-content: flex-end; width: 100%; }
-        .meta-label { font-weight: 600; margin-right: 5px; white-space: nowrap; }
-        .meta-input { width: 85px; border: none; border-bottom: 1px solid #ccc; text-align: right; font-family: 'Sarabun'; font-size: 0.85rem; }
+        /* Header */
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .shop-info { width: 60%; }
+        .shop-name { font-size: 1.5rem; font-weight: 700; color: var(--theme-color); margin-bottom: 5px; }
+        .shop-addr { font-size: 0.9rem; color: #333; min-height: 4em; resize: none; width: 100%; display: block; overflow: hidden; white-space: pre-wrap; }
         
-        .input-row { display: flex; align-items: baseline; margin-bottom: 6px; font-size: 0.9rem; }
-        .input-row label { color: var(--theme-color); font-weight: 600; min-width: 110px; font-size: 0.75rem; }
-        .input-row input { flex: 1; border: none; border-bottom: 1px dotted #ccc; font-size: 0.95rem; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background-color: #eee; border: 1px solid var(--theme-color); padding: 4px; font-size: 0.7rem; }
-        td { border: 1px solid #ddd; padding: 6px 4px; }
-        .summary-line { display: flex; justify-content: space-between; padding: 3px 10px; font-size: 0.85rem; align-items: center; }
-        .total-line { display: flex; justify-content: space-between; padding: 8px 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 5px; font-size: 1.1rem; }
-        .baht-text { font-size: 0.65rem; text-align: right; margin-top: 5px; color: #555; }
-        .credit-text { text-align: center; font-size: 0.7rem; color: #aaa; margin-top: 30px; line-height: 1.6; }
-        .calc-input { width: 40px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 380px; border-radius: 12px; max-height: 85vh; overflow-y: auto; }
-        .daily-summary { background: #e9ecef; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; border-left: 5px solid var(--theme-color); }
-        .history-card { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.85rem; position: relative; }
-        .btn-del { color: red; cursor: pointer; float: right; margin-left: 10px; }
-        .btn-view { color: #0d6efd; cursor: pointer; float: right; font-weight: bold; }
+        .bill-meta { width: 38%; display: flex; flex-direction: column; gap: 8px; }
+        .meta-row { display: flex; align-items: center; justify-content: flex-end; font-size: 0.85rem; }
+        .meta-label { font-weight: 700; color: var(--theme-color); margin-right: 5px; white-space: nowrap; }
+        .meta-value { width: 95px; border-bottom: 1px solid #ccc; text-align: center; padding: 2px; font-weight: bold; min-height: 1.2em; }
+
+        /* Customer */
+        .customer-section { margin-bottom: 15px; }
+        .input-row { display: flex; align-items: baseline; margin-bottom: 8px; font-size: 0.9rem; }
+        .input-row label { color: var(--theme-color); font-weight: 700; min-width: 120px; font-size: 0.8rem; }
+        .input-row input { flex: 1; border-bottom: 1px dotted #bbb; font-size: 0.95rem; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        th { background-color: #f8f9fa; border: 1px solid var(--theme-color); padding: 8px 4px; font-size: 0.75rem; color: var(--theme-color); }
+        td { border: 1px solid #ddd; padding: 8px 4px; word-wrap: break-word; vertical-align: top; }
+        .col-qty { width: 15%; text-align: center; }
+        .col-desc { width: 50%; }
+        .col-price { width: 15%; text-align: right; }
+        .col-amt { width: 20%; text-align: right; font-weight: bold; }
+
+        /* Summary Area */
+        .summary-area { margin-top: 20px; border-top: 2px solid #eee; padding-top: 10px; }
+        .summary-line { display: flex; justify-content: space-between; padding: 4px 10px; font-size: 0.9rem; align-items: center; }
+        .summary-label-group { display: flex; align-items: center; gap: 5px; flex-grow: 1; }
+        .total-line { display: flex; justify-content: space-between; padding: 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 10px; font-size: 1.2rem; }
+        .baht-text { font-size: 0.75rem; text-align: right; margin-top: 5px; color: #333; font-weight: bold; }
+        
+        .payment-box { width: 100%; margin-top: 15px; font-size: 0.8rem; height: 50px; border: 1px dashed #bbb; border-radius: 4px; padding: 5px; box-sizing: border-box; background: #fffaf0; }
+        .credit-text { text-align: center; font-size: 0.7rem; color: #999; margin-top: 40px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
+        .daily-summary { background: #e9ecef; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; border-left: 6px solid var(--theme-color); font-size: 0.9rem; }
+        .history-card { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        #export-clone-container { position: absolute; left: -9999px; top: 0; }
+        
+        /* สไตล์พิเศษสำหรับ Span ตอนส่งออกเพื่อให้บรรทัดเดียวกัน */
+        .export-span-row { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
     </style>
 </head>
 <body>
@@ -67,45 +102,68 @@
                 <textarea class="editable-input shop-addr" id="shopAddr" placeholder="ที่อยู่และเบอร์โทร / Address & Tel" onchange="saveShopInfo()"></textarea>
             </div>
             <div class="bill-meta">
-                <div class="meta-row"><span class="meta-label">No.</span><input type="text" class="meta-input" id="billNo" readonly placeholder="Auto"></div>
-                <div class="meta-row"><span class="meta-label">Date:</span><input type="date" class="meta-input" id="billDate"></div>
+                <div class="meta-row">
+                    <span class="meta-label">เลขที่ / No.</span>
+                    <div class="meta-value" id="billNoDisplay"></div>
+                    <input type="hidden" id="billNo">
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">วันที่ / Date:</span>
+                    <input type="date" class="editable-input meta-value" id="billDate">
+                </div>
             </div>
         </div>
 
-        <div class="customer-info">
+        <div class="customer-section">
             <div class="input-row"><label>นามลูกค้า / Name:</label><input type="text" id="custName" class="editable-input"></div>
             <div class="input-row"><label>ที่อยู่ / Address:</label><input type="text" id="custAddr" class="editable-input"></div>
         </div>
 
         <table>
-            <thead><tr><th style="width:15%;">จำนวน<br>Qty</th><th style="width:50%;">รายการ<br>Description</th><th style="width:15%;">หน่วยละ<br>Price</th><th style="width:20%;">รวมเงิน<br>Amount</th></tr></thead>
+            <thead><tr><th class="col-qty">จำนวน<br>Qty</th><th class="col-desc">รายการ<br>Description</th><th class="col-price">หน่วยละ<br>Price</th><th class="col-amt">รวมเงิน<br>Amount</th></tr></thead>
             <tbody id="itemsBody"></tbody>
         </table>
         <button class="btn-add" onclick="addRow()">+ เพิ่มรายการ (Add Item)</button>
 
-        <div style="margin-top: 15px;">
+        <div class="summary-area">
             <div class="summary-line"><span>รวมเงิน / Subtotal</span><span id="subTotal">0.00</span></div>
-            <div class="summary-line"><span>ส่วนลด / Discount <input type="number" id="discountRate" class="calc-input" value="0" onkeyup="calcTotal()"> %</span><span id="discountAmount">0.00</span></div>
-            <div class="summary-line"><span>ภาษี / VAT <input type="number" id="vatRate" class="calc-input" value="0" onkeyup="calcTotal()"> %</span><span id="vatAmount">0.00</span></div>
+            <div class="summary-line" id="discountLine">
+                <div class="summary-label-group">
+                    <span>ส่วนลด / Discount</span>
+                    <input type="number" id="discountRate" class="calc-input" placeholder="" onkeyup="calcTotal()">
+                    <span>%</span>
+                </div>
+                <span id="discountAmount">0.00</span>
+            </div>
+            <div class="summary-line" id="vatLine">
+                <div class="summary-label-group">
+                    <span>ภาษี / VAT</span>
+                    <input type="number" id="vatRate" class="calc-input" placeholder="" onkeyup="calcTotal()">
+                    <span>%</span>
+                </div>
+                <span id="vatAmount">0.00</span>
+            </div>
             <div class="total-line"><span>ยอดสุทธิ / Total</span><span id="grandTotal">0.00</span></div>
             <div class="baht-text" id="bahtText">( ศูนย์บาทถ้วน / Zero Baht Only )</div>
         </div>
 
-        <textarea id="paymentInfo" style="width:100%; margin-top:10px; font-size:0.7rem; height:45px; border:1px dashed #ccc; border-radius:4px;" placeholder="ข้อมูลชำระเงิน..." onchange="saveShopInfo()"></textarea>
+        <textarea id="paymentInfo" class="payment-box" placeholder="ข้อมูลชำระเงิน..." onchange="saveShopInfo()"></textarea>
 
         <div class="credit-text">
-            <strong>Cash receipt App | Version 1.2.6</strong><br>
+            <strong>Cash receipt App | Version 1.2.8</strong><br>
             © 2026 All Rights Reserved | Developed by Gemini & Ton7788<br>
             Contact: +66 88 897 7466
         </div>
     </div>
 
+    <div id="export-clone-container"></div>
+
     <div id="historyModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-top:0;">ประวัติการขาย (History)</h3>
+            <h3 style="margin-top:0; color:var(--theme-color); border-bottom:2px solid #eee; padding-bottom:10px;">ประวัติการขาย (History)</h3>
             <button class="btn-csv" onclick="exportToCSV()">📊 ส่งออก Excel + รายการสินค้า (CSV)</button>
             <div id="historyList"></div>
-            <button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:15px; padding:10px; background:#6c757d; color:white; border-radius:8px;">ปิด (Close)</button>
+            <button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:20px; background:#6c757d; color:white; border-radius:10px; padding:12px;">ปิด (Close)</button>
         </div>
     </div>
 
@@ -123,10 +181,10 @@
         function addRow(data = {}) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><input type="number" class="qty editable-input" style="text-align:center" value="${data.qty || ''}" onkeyup="calcTotal()"></td>
-                <td><input type="text" class="desc editable-input" value="${data.desc || ''}"></td>
-                <td><input type="number" class="price editable-input" style="text-align:right" value="${data.price || ''}" onkeyup="calcTotal()"></td>
-                <td style="text-align:right" class="row-total">${data.total || ''}</td>
+                <td class="col-qty"><input type="number" class="qty editable-input" style="text-align:center" value="${data.qty || ''}" onkeyup="calcTotal()"></td>
+                <td class="col-desc"><input type="text" class="desc editable-input" value="${data.desc || ''}"></td>
+                <td class="col-price"><input type="number" class="price editable-input" style="text-align:right" value="${data.price || ''}" onkeyup="calcTotal()"></td>
+                <td class="col-amt row-total">${data.total || ''}</td>
             `;
             document.getElementById('itemsBody').appendChild(tr);
         }
@@ -140,9 +198,12 @@
                 row.querySelector('.row-total').innerText = sum > 0 ? sum.toFixed(2) : '';
                 subtotal += sum;
             });
-            const dAmount = subtotal * ((parseFloat(document.getElementById('discountRate').value) || 0) / 100);
-            const vAmount = (subtotal - dAmount) * ((parseFloat(document.getElementById('vatRate').value) || 0) / 100);
+            const dRate = parseFloat(document.getElementById('discountRate').value) || 0;
+            const dAmount = subtotal * (dRate / 100);
+            const vRate = parseFloat(document.getElementById('vatRate').value) || 0;
+            const vAmount = (subtotal - dAmount) * (vRate / 100);
             const grand = subtotal - dAmount + vAmount;
+
             document.getElementById('subTotal').innerText = subtotal.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('discountAmount').innerText = dAmount.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('vatAmount').innerText = vAmount.toLocaleString(undefined, {minimumFractionDigits:2});
@@ -153,12 +214,18 @@
 
         function generateBillNo() {
             if (currentBillId) return;
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+            const h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
             const now = new Date();
             const prefix = `${(now.getFullYear()+543).toString().slice(-2)}${String(now.getMonth()+1).padStart(2,'0')}`;
-            const monthBills = history.filter(b => b.billNo.startsWith(prefix));
-            let nextSeq = monthBills.length > 0 ? parseInt(monthBills[0].billNo.split('-')[1]) + 1 : 1;
-            document.getElementById('billNo').value = `${prefix}-${String(nextSeq).padStart(3, '0')}`;
+            const monthBills = h.filter(b => b.billNo.startsWith(prefix));
+            let nextSeq = 1;
+            if (monthBills.length > 0) {
+                const sorted = monthBills.sort((a,b) => b.billNo.localeCompare(a.billNo));
+                nextSeq = parseInt(sorted[0].billNo.split('-')[1]) + 1;
+            }
+            const res = `${prefix}-${String(nextSeq).padStart(3, '0')}`;
+            document.getElementById('billNo').value = res;
+            document.getElementById('billNoDisplay').innerText = res;
         }
 
         function saveBill() {
@@ -170,61 +237,97 @@
                 const price = r.querySelector('.price').value;
                 if(qty || desc) items.push({ qty, desc, price, total: r.querySelector('.row-total').innerText });
             });
-            const billData = { id: currentBillId || Date.now(), billNo: document.getElementById('billNo').value, date: document.getElementById('billDate').value, custName: document.getElementById('custName').value, custAddr: document.getElementById('custAddr').value, items: items, discountRate: document.getElementById('discountRate').value, vatRate: document.getElementById('vatRate').value, total: total };
-            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
-            if (currentBillId) { history = history.map(b => b.id === currentBillId ? billData : b); } 
-            else { history.unshift(billData); }
-            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            const billData = { 
+                id: currentBillId || Date.now(), billNo: document.getElementById('billNo').value, date: document.getElementById('billDate').value, custName: document.getElementById('custName').value, custAddr: document.getElementById('custAddr').value, items: items, discountRate: document.getElementById('discountRate').value, vatRate: document.getElementById('vatRate').value, total: total 
+            };
+            let h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+            if (currentBillId) { h = h.map(b => b.id === currentBillId ? billData : b); } 
+            else { h.unshift(billData); }
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(h));
             currentBillId = billData.id; alert('บันทึกสำเร็จ!');
         }
 
-        function exportToCSV() {
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
-            if (!history.length) return alert("ไม่มีข้อมูล");
+        function exportImage() {
+            const source = document.getElementById('billEditor');
+            const container = document.getElementById('export-clone-container');
+            container.innerHTML = '';
+            const clone = source.cloneNode(true);
             
-            // เพิ่มหัวข้อ Column ให้ครบถ้วน
-            let csv = "\uFEFFวันที่,เลขที่บิล,ลูกค้า,รายการ,จำนวน,ราคาต่อหน่วย,รวมรายการ,ส่วนลด(%),ภาษี(%),ยอดสุทธิบิล\n";
-            
-            history.forEach(b => {
-                b.items.forEach(item => {
-                    // แทนที่เครื่องหมายคอมม่าในชื่อสินค้าด้วยช่องว่าง เพื่อไม่ให้ไฟล์ CSV เพี้ยน
-                    const cleanDesc = (item.desc || "").replace(/,/g, " ");
-                    csv += `${b.date},${b.billNo},${b.custName || 'ทั่วไป'},${cleanDesc},${item.qty},${item.price},${item.total},${b.discountRate}%,${b.vatRate}%,${b.total}\n`;
-                });
+            // ปรับส่วนลดและภาษีให้เป็น Span บรรทัดเดียวกันตอนส่งออก
+            ['discountLine', 'vatLine'].forEach(id => {
+                const line = clone.querySelector(`#${id}`);
+                if(line) {
+                    const labelGroup = line.querySelector('.summary-label-group');
+                    const amountSpan = line.querySelector('span[id$="Amount"]');
+                    const rateInput = labelGroup.querySelector('input');
+                    const rateVal = rateInput.value || '';
+                    
+                    // สร้างเนื้อหาใหม่แบบบรรทัดเดียว
+                    line.innerHTML = `<div class="export-span-row">
+                        <span>${labelGroup.firstElementChild.innerText} ${rateVal ? rateVal + '%' : ''}</span>
+                        <span>${amountSpan.innerText}</span>
+                    </div>`;
+                }
             });
 
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `Sales_Detail_Report_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
+            clone.querySelectorAll('input, textarea').forEach(input => {
+                if(input.classList.contains('calc-input')) return; // จัดการไปแล้วด้านบน
+                const span = document.createElement('span');
+                const val = input.value || '';
+                span.style.fontFamily = "'Sarabun', sans-serif";
+                span.style.fontSize = getComputedStyle(input).fontSize;
+                span.style.color = getComputedStyle(input).color;
+                span.style.display = 'inline-block';
+                span.style.width = '100%';
+                span.style.whiteSpace = 'pre-wrap';
+                span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
+                input.parentNode.replaceChild(span, input);
+            });
+
+            clone.querySelectorAll('button').forEach(b => b.remove());
+            container.appendChild(clone);
+
+            setTimeout(() => {
+                html2canvas(clone, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Bill-${document.getElementById('billNo').value}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                    container.innerHTML = '';
+                });
+            }, 100);
         }
 
         function openHistory() {
             const list = document.getElementById('historyList');
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
-            list.innerHTML = history.length ? '' : '<p style="text-align:center; padding:20px;">ไม่มีประวัติ</p>';
-            const groups = history.reduce((acc, b) => { acc[b.date] = (acc[b.date] || 0) + b.total; return acc; }, {});
+            const h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+            list.innerHTML = h.length ? '' : '<p style="text-align:center; padding:20px;">ไม่มีประวัติ</p>';
+            const groups = h.reduce((acc, b) => { acc[b.date] = (acc[b.date] || 0) + b.total; return acc; }, {});
             Object.keys(groups).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
                 list.innerHTML += `<div class="daily-summary">📅 ${date} | รวม: ${groups[date].toLocaleString()} บ.</div>`;
-                history.filter(b => b.date === date).forEach(b => {
-                    list.innerHTML += `<div class="history-card"><span class="btn-del" onclick="deleteBill(${b.id})">ลบ</span><span class="btn-view" onclick='loadBill(${b.id})'>เปิดดู</span><b>${b.billNo}</b> | ${b.custName || 'ทั่วไป'}<br>ยอด: ${b.total.toLocaleString()} บ.</div>`;
+                h.filter(b => b.date === date).forEach(b => {
+                    list.innerHTML += `<div class="history-card">
+                        <span style="color:red; cursor:pointer; float:right; margin-left:15px;" onclick="deleteBill(${b.id})">ลบ</span>
+                        <span style="color:#0d6efd; cursor:pointer; float:right; font-weight:bold;" onclick='loadBill(${b.id})'>เปิดดู</span>
+                        <b>${b.billNo}</b> | ${b.custName || 'ทั่วไป'}<br>ยอด: ${b.total.toLocaleString()} บ.
+                    </div>`;
                 });
             });
             document.getElementById('historyModal').style.display = 'block';
         }
 
         function loadBill(id) {
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
-            const b = history.find(item => item.id === id);
+            const h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+            const b = h.find(i => i.id === id);
             if (!b) return;
             currentBillId = b.id;
             document.getElementById('billNo').value = b.billNo;
+            document.getElementById('billNoDisplay').innerText = b.billNo;
             document.getElementById('billDate').value = b.date;
             document.getElementById('custName').value = b.custName || '';
             document.getElementById('custAddr').value = b.custAddr || '';
-            document.getElementById('discountRate').value = b.discountRate || 0;
-            document.getElementById('vatRate').value = b.vatRate || 0;
+            document.getElementById('discountRate').value = b.discountRate || '';
+            document.getElementById('vatRate').value = b.vatRate || '';
             document.getElementById('itemsBody').innerHTML = '';
             b.items.forEach(item => addRow(item));
             calcTotal(); document.getElementById('historyModal').style.display = 'none';
@@ -233,8 +336,8 @@
         function deleteBill(id) { if (confirm('ลบ?')) { let h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)).filter(b => b.id !== id); localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(h)); openHistory(); } }
         function saveShopInfo() { localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify({ name: document.getElementById('shopName').value, addr: document.getElementById('shopAddr').value, pay: document.getElementById('paymentInfo').value })); }
         function loadShopInfo() { const c = JSON.parse(localStorage.getItem(STORAGE_KEY_CONFIG)); if(c){ document.getElementById('shopName').value=c.name||''; document.getElementById('shopAddr').value=c.addr||''; document.getElementById('paymentInfo').value=c.pay||''; } }
-        function createNew() { if(confirm('สร้างใหม่?')) { currentBillId = null; document.getElementById('custName').value=''; document.getElementById('custAddr').value=''; document.getElementById('itemsBody').innerHTML=''; addRow(); generateBillNo(); calcTotal(); } }
-        function exportImage() { html2canvas(document.getElementById('billEditor'), { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `Bill-${document.getElementById('billNo').value}.png`; link.href = canvas.toDataURL(); link.click(); }); }
+        function createNew() { if(confirm('สร้างใหม่?')) { currentBillId = null; document.getElementById('custName').value=''; document.getElementById('custAddr').value=''; document.getElementById('discountRate').value=''; document.getElementById('vatRate').value=''; document.getElementById('itemsBody').innerHTML=''; addRow(); generateBillNo(); calcTotal(); } }
+        
         function ThaiBaht(n) {
             if (!n || n == 0) return "ศูนย์บาทถ้วน";
             const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
@@ -252,6 +355,20 @@
             }
             text += "บาท" + (parseInt(satang) === 0 ? "ถ้วน" : satang + "สตางค์");
             return text;
+        }
+
+        function exportToCSV() {
+            const h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
+            if (!h.length) return alert("ไม่มีข้อมูล");
+            let csv = "\uFEFFวันที่,เลขที่บิล,ลูกค้า,รายการ,จำนวน,ราคาต่อหน่วย,รวมรายการ,ส่วนลด(%),ภาษี(%),ยอดสุทธิ\n";
+            h.forEach(b => b.items.forEach(item => {
+                csv += `${b.date},${b.billNo},${(b.custName||'').replace(/,/g,' ')},${(item.desc||'').replace(/,/g,' ')},${item.qty},${item.price},${item.total},${b.discountRate}%,${b.vatRate}%,${b.total}\n`;
+            }));
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Report_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
         }
     </script>
 </body>
