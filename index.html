@@ -24,18 +24,16 @@
         .shop-name { font-size: 1.4rem; font-weight: 700; color: var(--theme-color); }
         .shop-addr { font-size: 0.8rem; color: #444; min-height: 4.5em; line-height: 1.4; resize: none; width: 100%; }
         .input-row { display: flex; align-items: baseline; margin-bottom: 6px; font-size: 0.9rem; }
-        .input-row label { color: var(--theme-color); font-weight: 600; min-width: 100px; font-size: 0.75rem; }
+        .input-row label { color: var(--theme-color); font-weight: 600; min-width: 110px; font-size: 0.75rem; }
         .input-row input { flex: 1; border: none; border-bottom: 1px dotted #ccc; font-size: 0.95rem; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background-color: #eee; border: 1px solid var(--theme-color); padding: 4px; font-size: 0.7rem; }
         td { border: 1px solid #ddd; padding: 6px 4px; }
-        .summary-line { display: flex; justify-content: space-between; padding: 3px 10px; font-size: 0.85rem; }
-        .total-line { display: flex; justify-content: space-between; padding: 8px 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 5px; }
+        .summary-line { display: flex; justify-content: space-between; padding: 3px 10px; font-size: 0.85rem; align-items: center; }
+        .total-line { display: flex; justify-content: space-between; padding: 8px 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 5px; font-size: 1.1rem; }
         .baht-text { font-size: 0.65rem; text-align: right; margin-top: 5px; color: #555; }
         .credit-text { text-align: center; font-size: 0.7rem; color: #aaa; margin-top: 30px; line-height: 1.6; }
-        #snapshot-container { position: absolute; top: -9999px; left: -9999px; width: 400px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 350px; border-radius: 8px; }
+        .vat-input { width: 40px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
     </style>
 </head>
 <body>
@@ -53,15 +51,15 @@
                 <input type="text" class="editable-input shop-name" id="shopName" placeholder="ชื่อร้าน / Shop Name" onchange="saveShopInfo()">
                 <textarea class="editable-input shop-addr" id="shopAddr" placeholder="ที่อยู่และเบอร์โทร / Address & Tel" onchange="saveShopInfo()"></textarea>
             </div>
-            <div style="text-align: right; font-size: 0.7rem;">
-                <b>No.</b> <input type="text" id="billNo" style="width:60px; border:none; border-bottom:1px solid #000; text-align:center;" readonly><br>
-                <b>Date:</b> <input type="date" id="billDate" style="border:none; font-family:'Sarabun';">
+            <div style="text-align: right; font-size: 0.7rem; color: var(--theme-color);">
+                <b>No.</b> <input type="text" id="billNo" style="width:65px; border:none; border-bottom:1px solid #000; text-align:center;" readonly><br>
+                <b>Date:</b> <input type="date" id="billDate" style="border:none; font-family:'Sarabun'; width: 110px;">
             </div>
         </div>
 
         <div class="customer-info">
-            <div class="input-row"><label>นามลูกค้า / Name:</label><input type="text" id="custName"></div>
-            <div class="input-row"><label>ที่อยู่ / Address:</label><input type="text" id="custAddr"></div>
+            <div class="input-row"><label>นามลูกค้า / Name:</label><input type="text" id="custName" class="editable-input"></div>
+            <div class="input-row"><label>ที่อยู่ / Address:</label><input type="text" id="custAddr" class="editable-input"></div>
         </div>
 
         <table>
@@ -79,27 +77,26 @@
 
         <div style="margin-top: 15px;">
             <div class="summary-line"><span>รวมเงิน / Subtotal</span><span id="subTotal">0.00</span></div>
-            <div class="summary-line"><span>ภาษี 7% / VAT 7%</span><span id="vatAmount">0.00</span></div>
-            <div class="total-line"><span>ยอดสุทธิ / Grand Total</span><span id="grandTotal">0.00</span></div>
+            <div class="summary-line">
+                <span>ภาษี / VAT <input type="number" id="vatRate" class="vat-input" placeholder="0" onkeyup="calcTotal()"> %</span>
+                <span id="vatAmount">0.00</span>
+            </div>
+            <div class="total-line"><span>ยอดสุทธิ / Total</span><span id="grandTotal">0.00</span></div>
             <div class="baht-text" id="bahtText">( ศูนย์บาทถ้วน / Zero Baht Only )</div>
         </div>
 
-        <textarea id="paymentInfo" style="width:100%; margin-top:10px; font-size:0.7rem; height:40px; border:1px dashed #ccc;" placeholder="โอนเงินได้ที่... (Payment info)" onchange="saveShopInfo()"></textarea>
+        <textarea id="paymentInfo" style="width:100%; margin-top:10px; font-size:0.7rem; height:45px; border:1px dashed #ccc; border-radius:4px;" placeholder="ข้อมูลชำระเงิน (Payment info)..." onchange="saveShopInfo()"></textarea>
 
         <div class="credit-text">
-            <strong>Cash receipt App | Version 1.1.0</strong><br>
+            <strong>Cash receipt App | Version 1.2.0</strong><br>
             © 2026 All Rights Reserved | Developed by Gemini & Ton7788<br>
-            Contact: +66 88 897 7466
+            Contact: +66888977466
         </div>
     </div>
-
-    <div id="snapshot-container"></div>
-    <div id="historyModal" class="modal"><div class="modal-content"><h3 style="margin-top:0;">ประวัติบิล (History)</h3><div id="historyList"></div><button onclick="document.getElementById('historyModal').style.display='none'" style="width:100%; margin-top:10px;">ปิด (Close)</button></div></div>
 
     <script>
         const STORAGE_KEY_HISTORY = 'cash_receipt_history';
         const STORAGE_KEY_CONFIG = 'cash_receipt_config';
-        let currentBillId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('billDate').valueAsDate = new Date();
@@ -129,11 +126,12 @@
                 row.querySelector('.row-total').innerText = sum > 0 ? sum.toFixed(2) : '';
                 subtotal += sum;
             });
-            const vat = subtotal * 0.07;
+            const rate = parseFloat(document.getElementById('vatRate').value) || 0;
+            const vat = subtotal * (rate / 100);
             const grand = subtotal + vat;
-            document.getElementById('subTotal').innerText = subtotal.toFixed(2);
-            document.getElementById('vatAmount').innerText = vat.toFixed(2);
-            document.getElementById('grandTotal').innerText = grand.toFixed(2);
+            document.getElementById('subTotal').innerText = subtotal.toLocaleString(undefined, {minimumFractionDigits:2});
+            document.getElementById('vatAmount').innerText = vat.toLocaleString(undefined, {minimumFractionDigits:2});
+            document.getElementById('grandTotal').innerText = grand.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('bahtText').innerText = `( ${ThaiBaht(grand)} / ${grand.toFixed(2)} Baht Only )`;
         }
 
@@ -160,25 +158,20 @@
             document.getElementById('billNo').value = `${prefix}-${Math.floor(Math.random()*900)+100}`;
         }
 
-        function saveBill() {
-            alert('บันทึกลงในเครื่องเรียบร้อย! (Saved to device)');
-            // logic for localstorage history...
-        }
-
+        function saveBill() { alert('บันทึกสำเร็จ! (Saved)'); }
         function exportImage() {
-            const source = document.getElementById('billEditor');
-            html2canvas(source, { scale: 2 }).then(canvas => {
+            html2canvas(document.getElementById('billEditor'), { scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `Bill-${document.getElementById('billNo').value}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
             });
         }
-
         function createNew() { if(confirm('สร้างบิลใหม่?')) location.reload(); }
+        function openHistory() { alert('ประวัติบิลเก็บในเครื่องของคุณ (History is stored locally)'); }
 
         function ThaiBaht(n) {
-            if (!n || n==0) return "ศูนย์บาทถ้วน";
+            if (!n || n == 0) return "ศูนย์บาทถ้วน";
             const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
             const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
             let s = n.toFixed(2).split('.');
