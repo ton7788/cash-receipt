@@ -23,7 +23,6 @@
         .bill-paper { background: white; width: 100%; max-width: 450px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; border-top: 8px solid var(--theme-color); line-height: 1.4; }
         .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', sans-serif; outline: none; padding: 2px 0; }
         
-        /* Fixed Header Side-by-Side */
         .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
         .shop-info { width: 65%; }
         .shop-name { font-size: 1.4rem; font-weight: 700; color: var(--theme-color); margin-bottom: 5px; }
@@ -53,7 +52,7 @@
         .summary-value { min-width: 100px; text-align: right; font-weight: 600; }
 
         .total-line { display: flex; justify-content: space-between; padding: 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 10px; font-size: 1.2rem; }
-        .baht-text { font-size: 0.75rem; text-align: right; margin-top: 5px; color: #333; font-weight: bold; }
+        .baht-text { font-size: 0.8rem; text-align: right; margin-top: 5px; color: #333; font-weight: bold; }
         
         .payment-box { width: 100%; margin-top: 15px; font-size: 0.8rem; height: 50px; border: 1px dashed #bbb; border-radius: 4px; padding: 5px; box-sizing: border-box; background: #fffaf0; }
         .collector-row { margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--theme-color); }
@@ -127,7 +126,7 @@
                 <span class="summary-value" id="vatAmount">0.00</span>
             </div>
             <div class="total-line"><span>ยอดสุทธิ / Total</span><span id="grandTotal">0.00</span></div>
-            <div class="baht-text" id="bahtText">( ศูนย์บาทถ้วน / Zero Baht Only )</div>
+            <div class="baht-text" id="bahtText">( ศูนย์บาทถ้วน )</div>
         </div>
 
         <textarea id="paymentInfo" class="payment-box" placeholder="ข้อมูลชำระเงิน..." onchange="saveShopInfo()"></textarea>
@@ -138,7 +137,7 @@
         </div>
 
         <div class="credit-text">
-            <strong>Cash receipt App | Version 1.3.4</strong><br>
+            <strong>Cash receipt App | Version 1.3.6</strong><br>
             © 2026 All Rights Reserved | Developed by Gemini & Ton7788<br>
             Contact: +66 88 897 7466
         </div>
@@ -195,7 +194,7 @@
             document.getElementById('discountAmount').innerText = dAmount.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('vatAmount').innerText = vAmount.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('grandTotal').innerText = grand.toLocaleString(undefined, {minimumFractionDigits:2});
-            document.getElementById('bahtText').innerText = `( ${ThaiBaht(grand)} / ${grand.toFixed(2)} Baht Only )`;
+            document.getElementById('bahtText').innerText = `( ${ThaiBaht(grand)} )`;
             return grand;
         }
 
@@ -259,9 +258,9 @@
                 span.style.fontSize = getComputedStyle(input).fontSize;
                 span.style.fontWeight = getComputedStyle(input).fontWeight;
                 span.style.display = 'inline-block';
+                span.style.width = '100%';
                 span.style.whiteSpace = 'pre-wrap';
                 span.style.textAlign = getComputedStyle(input).textAlign;
-                span.style.width = (input.classList.contains('meta-input') || input.id === 'billDate') ? 'auto' : '100%';
                 
                 span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
                 input.parentNode.replaceChild(span, input);
@@ -338,19 +337,32 @@
             if (!n || n == 0) return "ศูนย์บาทถ้วน";
             const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
             const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
-            let s = n.toFixed(2).split('.');
-            let baht = s[0], satang = s[1], text = "";
-            for (let i = 0; i < baht.length; i++) {
-                let num = parseInt(baht.charAt(i)), unitIndex = baht.length - i - 1;
-                if (num === 0) continue;
-                if (unitIndex === 1 && num === 2) text += "ยี่";
-                else if (unitIndex === 1 && num === 1) text += "";
-                else if (unitIndex === 0 && num === 1 && baht.length > 1) text += "เอ็ด";
-                else text += numbers[num];
-                text += units[unitIndex];
+
+            function convert(numberStr) {
+                let res = "";
+                for (let i = 0; i < numberStr.length; i++) {
+                    let num = parseInt(numberStr.charAt(i)), unitIndex = numberStr.length - i - 1;
+                    if (num === 0) continue;
+                    if (unitIndex === 1 && num === 2) res += "ยี่";
+                    else if (unitIndex === 1 && num === 1) res += "";
+                    else if (unitIndex === 0 && num === 1 && numberStr.length > 1) res += "เอ็ด";
+                    else res += numbers[num];
+                    res += units[unitIndex];
+                }
+                return res;
             }
-            text += "บาท" + (parseInt(satang) === 0 ? "ถ้วน" : satang + "สตางค์");
-            return text;
+
+            let s = n.toFixed(2).split('.');
+            let bahtText = convert(s[0]);
+            let satangText = convert(s[1]);
+
+            let result = (bahtText || "ศูนย์") + "บาท";
+            if (parseInt(s[1]) === 0) {
+                result += "ถ้วน";
+            } else {
+                result += satangText + "สตางค์";
+            }
+            return result;
         }
 
         function exportToCSV() {
