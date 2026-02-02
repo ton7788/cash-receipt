@@ -23,18 +23,25 @@
         .bill-paper { background: white; width: 100%; max-width: 450px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; border-top: 8px solid var(--theme-color); line-height: 1.4; }
         .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', sans-serif; outline: none; padding: 2px 0; }
         
-        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .shop-info { width: 60%; }
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
+        .shop-info { width: 100%; max-width: 250px; flex-grow: 1; }
         .shop-name { font-size: 1.5rem; font-weight: 700; color: var(--theme-color); margin-bottom: 5px; }
         .shop-addr { font-size: 0.9rem; color: #333; min-height: 4em; resize: none; width: 100%; display: block; overflow: hidden; white-space: pre-wrap; }
         
-        .bill-meta { width: 38%; display: flex; flex-direction: column; gap: 8px; }
-        .meta-row { display: flex; align-items: center; justify-content: flex-end; font-size: 0.85rem; }
-        .meta-label { font-weight: 700; color: var(--theme-color); margin-right: 5px; white-space: nowrap; }
-        .meta-value { width: 95px; border-bottom: 1px solid #ccc; text-align: center; padding: 2px; font-weight: bold; min-height: 1.2em; }
+        .bill-meta { width: 100%; max-width: 150px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        
+        @media (min-width: 400px) {
+            .shop-info { width: 58%; }
+            .bill-meta { width: 38%; text-align: right; align-items: flex-end; }
+            .meta-row { justify-content: flex-end; }
+        }
+
+        .meta-row { display: flex; align-items: center; font-size: 0.85rem; width: 100%; }
+        .meta-label { font-weight: 700; color: var(--theme-color); margin-right: 8px; white-space: nowrap; }
+        .meta-value { flex-grow: 1; border-bottom: 1px solid #ccc; text-align: center; padding: 2px; font-weight: bold; min-height: 1.2em; max-width: 100px; }
 
         .input-row { display: flex; align-items: baseline; margin-bottom: 8px; font-size: 0.9rem; }
-        .input-row label { color: var(--theme-color); font-weight: 700; min-width: 120px; font-size: 0.8rem; }
+        .input-row label { color: var(--theme-color); font-weight: 700; min-width: 110px; font-size: 0.8rem; }
         .input-row input { flex: 1; border-bottom: 1px dotted #bbb; font-size: 0.95rem; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
@@ -45,11 +52,10 @@
         .col-price { width: 15%; text-align: right; }
         .col-amt { width: 20%; text-align: right; font-weight: bold; }
 
-        /* Summary Alignment Fix */
         .summary-area { margin-top: 20px; border-top: 2px solid #eee; padding-top: 10px; }
         .summary-line { display: flex; justify-content: space-between; padding: 4px 5px; font-size: 0.9rem; align-items: center; }
         .summary-label-box { display: flex; align-items: center; gap: 5px; flex-grow: 1; }
-        .summary-value { min-width: 100px; text-align: right; font-weight: 500; }
+        .summary-value { min-width: 100px; text-align: right; font-weight: 600; }
 
         .total-line { display: flex; justify-content: space-between; padding: 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 10px; font-size: 1.2rem; }
         .baht-text { font-size: 0.75rem; text-align: right; margin-top: 5px; color: #333; font-weight: bold; }
@@ -65,7 +71,7 @@
         .history-card { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
         #export-clone-container { position: absolute; left: -9999px; top: 0; }
-        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); background: #fdfdfd; }
+        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
     </style>
 </head>
 <body>
@@ -108,10 +114,7 @@
         <button class="btn-add" onclick="addRow()">+ เพิ่มรายการ (Add Item)</button>
 
         <div class="summary-area">
-            <div class="summary-line">
-                <span class="summary-label-box">รวมเงิน / Subtotal</span>
-                <span class="summary-value" id="subTotal">0.00</span>
-            </div>
+            <div class="summary-line"><span class="summary-label-box">รวมเงิน / Subtotal</span><span class="summary-value" id="subTotal">0.00</span></div>
             <div class="summary-line" id="discountLine">
                 <div class="summary-label-box">
                     <span>ส่วนลด / Discount</span>
@@ -128,10 +131,7 @@
                 </div>
                 <span class="summary-value" id="vatAmount">0.00</span>
             </div>
-            <div class="total-line">
-                <span>ยอดสุทธิ / Total</span>
-                <span id="grandTotal">0.00</span>
-            </div>
+            <div class="total-line"><span>ยอดสุทธิ / Total</span><span id="grandTotal">0.00</span></div>
             <div class="baht-text" id="bahtText">( ศูนย์บาทถ้วน / Zero Baht Only )</div>
         </div>
 
@@ -143,7 +143,7 @@
         </div>
 
         <div class="credit-text">
-            <strong>Cash receipt App | Version 1.3.1</strong><br>
+            <strong>Cash receipt App | Version 1.3.3</strong><br>
             © 2026 All Rights Reserved | Developed by Gemini & Ton7788<br>
             Contact: +66 88 897 7466
         </div>
@@ -166,9 +166,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('billDate').valueAsDate = new Date();
-            loadShopInfo();
-            generateBillNo();
-            addRow();
+            loadShopInfo(); generateBillNo(); addRow();
             if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         });
 
@@ -247,7 +245,21 @@
             container.innerHTML = '';
             const clone = source.cloneNode(true);
             
-            // Clean inputs for export
+            // Fixed Export Logic for Alignment
+            ['discountLine', 'vatLine'].forEach(id => {
+                const line = clone.querySelector(`#${id}`);
+                if(line) {
+                    const input = line.querySelector('input');
+                    const rateVal = input.value || '';
+                    const amount = line.querySelector('span[id$="Amount"]').innerText;
+                    const label = line.querySelector('.summary-label-box span').innerText;
+                    line.innerHTML = `
+                        <span class="summary-label-box">${label} ${rateVal ? rateVal + '%' : ''}</span>
+                        <span class="summary-value">${amount}</span>
+                    `;
+                }
+            });
+
             clone.querySelectorAll('input, textarea').forEach(input => {
                 if(input.type === 'hidden' || input.id === 'billNo') { input.remove(); return; }
                 const span = document.createElement('span');
@@ -256,18 +268,10 @@
                 span.style.fontSize = getComputedStyle(input).fontSize;
                 span.style.fontWeight = getComputedStyle(input).fontWeight;
                 span.style.display = 'inline-block';
+                span.style.width = '100%';
                 span.style.whiteSpace = 'pre-wrap';
-                
-                if (input.classList.contains('calc-input')) {
-                    // Specific fix for % inputs in summary
-                    span.innerText = val ? val + '%' : '';
-                    span.style.width = 'auto';
-                    input.parentNode.replaceChild(span, input);
-                } else {
-                    span.style.width = '100%';
-                    span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
-                    input.parentNode.replaceChild(span, input);
-                }
+                span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
+                input.parentNode.replaceChild(span, input);
             });
 
             clone.querySelectorAll('button').forEach(b => b.remove());
