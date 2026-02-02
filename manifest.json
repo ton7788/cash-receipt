@@ -1,7 +1,7 @@
 {
   "name": "Cash receipt",
   "short_name": "CashReceipt",
-  "description": "Simple offline billing system",
+  "description": "Professional Billing System by Gemini & Ton7788",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -14,5 +14,4 @@
       "purpose": "any maskable"
     }
   ]
-
 }
