@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cash-receipt-v1.2.4';
+const CACHE_NAME = 'cash-receipt-v1.2.6';
 const assets = [
   './',
   './index.html',
