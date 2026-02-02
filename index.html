@@ -11,8 +11,6 @@
     <style>
         :root { --theme-color: #2c3e50; --bg-color: #f3f4f6; }
         body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-color); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Controls */
         .controls { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; width: 100%; justify-content: center; padding-bottom: 5px; }
         button { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: 'Sarabun'; }
         .btn-save { background-color: #198754; color: white; }
@@ -22,22 +20,9 @@
         .btn-add { background-color: var(--theme-color); color: white; width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; }
         .btn-csv { background-color: #157347; color: white; width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; }
 
-        /* Bill Layout */
-        .bill-paper { 
-            background: white; 
-            width: 100%; 
-            max-width: 450px; 
-            padding: 30px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            position: relative; 
-            box-sizing: border-box; 
-            border-top: 8px solid var(--theme-color);
-            line-height: 1.4;
-        }
-        
+        .bill-paper { background: white; width: 100%; max-width: 450px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; border-top: 8px solid var(--theme-color); line-height: 1.4; }
         .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', sans-serif; outline: none; padding: 2px 0; }
         
-        /* Header */
         .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .shop-info { width: 60%; }
         .shop-name { font-size: 1.5rem; font-weight: 700; color: var(--theme-color); margin-bottom: 5px; }
@@ -48,13 +33,10 @@
         .meta-label { font-weight: 700; color: var(--theme-color); margin-right: 5px; white-space: nowrap; }
         .meta-value { width: 95px; border-bottom: 1px solid #ccc; text-align: center; padding: 2px; font-weight: bold; min-height: 1.2em; }
 
-        /* Customer */
-        .customer-section { margin-bottom: 15px; }
         .input-row { display: flex; align-items: baseline; margin-bottom: 8px; font-size: 0.9rem; }
         .input-row label { color: var(--theme-color); font-weight: 700; min-width: 120px; font-size: 0.8rem; }
         .input-row input { flex: 1; border-bottom: 1px dotted #bbb; font-size: 0.95rem; }
 
-        /* Table */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
         th { background-color: #f8f9fa; border: 1px solid var(--theme-color); padding: 8px 4px; font-size: 0.75rem; color: var(--theme-color); }
         td { border: 1px solid #ddd; padding: 8px 4px; word-wrap: break-word; vertical-align: top; }
@@ -63,27 +45,27 @@
         .col-price { width: 15%; text-align: right; }
         .col-amt { width: 20%; text-align: right; font-weight: bold; }
 
-        /* Summary Area */
+        /* Summary Alignment Fix */
         .summary-area { margin-top: 20px; border-top: 2px solid #eee; padding-top: 10px; }
-        .summary-line { display: flex; justify-content: space-between; padding: 4px 10px; font-size: 0.9rem; align-items: center; }
-        .summary-label-group { display: flex; align-items: center; gap: 5px; flex-grow: 1; }
+        .summary-line { display: flex; justify-content: space-between; padding: 4px 5px; font-size: 0.9rem; align-items: center; }
+        .summary-label-box { display: flex; align-items: center; gap: 5px; flex-grow: 1; }
+        .summary-value { min-width: 100px; text-align: right; font-weight: 500; }
+
         .total-line { display: flex; justify-content: space-between; padding: 10px; background: var(--theme-color); color: white; font-weight: bold; border-radius: 4px; margin-top: 10px; font-size: 1.2rem; }
         .baht-text { font-size: 0.75rem; text-align: right; margin-top: 5px; color: #333; font-weight: bold; }
         
         .payment-box { width: 100%; margin-top: 15px; font-size: 0.8rem; height: 50px; border: 1px dashed #bbb; border-radius: 4px; padding: 5px; box-sizing: border-box; background: #fffaf0; }
+        .collector-row { margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--theme-color); }
+        .collector-input { border: none; border-bottom: 1px dotted #000; width: 180px; text-align: center; font-family: 'Sarabun'; outline: none; font-weight: 500; }
         .credit-text { text-align: center; font-size: 0.7rem; color: #999; margin-top: 40px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; }
 
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(2px); }
         .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
         .daily-summary { background: #e9ecef; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; border-left: 6px solid var(--theme-color); font-size: 0.9rem; }
         .history-card { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
         #export-clone-container { position: absolute; left: -9999px; top: 0; }
-        
-        /* สไตล์พิเศษสำหรับ Span ตอนส่งออกเพื่อให้บรรทัดเดียวกัน */
-        .export-span-row { display: flex; justify-content: space-between; width: 100%; align-items: center; }
-        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
+        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); background: #fdfdfd; }
     </style>
 </head>
 <body>
@@ -126,38 +108,48 @@
         <button class="btn-add" onclick="addRow()">+ เพิ่มรายการ (Add Item)</button>
 
         <div class="summary-area">
-            <div class="summary-line"><span>รวมเงิน / Subtotal</span><span id="subTotal">0.00</span></div>
+            <div class="summary-line">
+                <span class="summary-label-box">รวมเงิน / Subtotal</span>
+                <span class="summary-value" id="subTotal">0.00</span>
+            </div>
             <div class="summary-line" id="discountLine">
-                <div class="summary-label-group">
+                <div class="summary-label-box">
                     <span>ส่วนลด / Discount</span>
                     <input type="number" id="discountRate" class="calc-input" placeholder="" onkeyup="calcTotal()">
                     <span>%</span>
                 </div>
-                <span id="discountAmount">0.00</span>
+                <span class="summary-value" id="discountAmount">0.00</span>
             </div>
             <div class="summary-line" id="vatLine">
-                <div class="summary-label-group">
+                <div class="summary-label-box">
                     <span>ภาษี / VAT</span>
                     <input type="number" id="vatRate" class="calc-input" placeholder="" onkeyup="calcTotal()">
                     <span>%</span>
                 </div>
-                <span id="vatAmount">0.00</span>
+                <span class="summary-value" id="vatAmount">0.00</span>
             </div>
-            <div class="total-line"><span>ยอดสุทธิ / Total</span><span id="grandTotal">0.00</span></div>
+            <div class="total-line">
+                <span>ยอดสุทธิ / Total</span>
+                <span id="grandTotal">0.00</span>
+            </div>
             <div class="baht-text" id="bahtText">( ศูนย์บาทถ้วน / Zero Baht Only )</div>
         </div>
 
-        <textarea id="paymentInfo" class="payment-box" placeholder="ข้อมูลชำระเงิน..." onchange="saveShopInfo()"></textarea>
+        <textarea id="paymentInfo" class="payment-box" placeholder="ข้อมูลชำระเงิน (ธนาคาร, เลขบัญชี)..." onchange="saveShopInfo()"></textarea>
+
+        <div class="collector-row">
+            <input type="text" id="collectorName" class="collector-input" placeholder="( ผู้รับเงิน )" onchange="saveShopInfo()"><br>
+            <span style="font-size:0.75rem;">ผู้รับเงิน / Collector</span>
+        </div>
 
         <div class="credit-text">
-            <strong>Cash receipt App | Version 1.2.8</strong><br>
+            <strong>Cash receipt App | Version 1.3.1</strong><br>
             © 2026 All Rights Reserved | Developed by Gemini & Ton7788<br>
             Contact: +66 88 897 7466
         </div>
     </div>
 
     <div id="export-clone-container"></div>
-
     <div id="historyModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--theme-color); border-bottom:2px solid #eee; padding-bottom:10px;">ประวัติการขาย (History)</h3>
@@ -174,7 +166,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('billDate').valueAsDate = new Date();
-            loadShopInfo(); generateBillNo(); addRow();
+            loadShopInfo();
+            generateBillNo();
+            addRow();
             if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         });
 
@@ -253,35 +247,27 @@
             container.innerHTML = '';
             const clone = source.cloneNode(true);
             
-            // ปรับส่วนลดและภาษีให้เป็น Span บรรทัดเดียวกันตอนส่งออก
-            ['discountLine', 'vatLine'].forEach(id => {
-                const line = clone.querySelector(`#${id}`);
-                if(line) {
-                    const labelGroup = line.querySelector('.summary-label-group');
-                    const amountSpan = line.querySelector('span[id$="Amount"]');
-                    const rateInput = labelGroup.querySelector('input');
-                    const rateVal = rateInput.value || '';
-                    
-                    // สร้างเนื้อหาใหม่แบบบรรทัดเดียว
-                    line.innerHTML = `<div class="export-span-row">
-                        <span>${labelGroup.firstElementChild.innerText} ${rateVal ? rateVal + '%' : ''}</span>
-                        <span>${amountSpan.innerText}</span>
-                    </div>`;
-                }
-            });
-
+            // Clean inputs for export
             clone.querySelectorAll('input, textarea').forEach(input => {
-                if(input.classList.contains('calc-input')) return; // จัดการไปแล้วด้านบน
+                if(input.type === 'hidden' || input.id === 'billNo') { input.remove(); return; }
                 const span = document.createElement('span');
                 const val = input.value || '';
                 span.style.fontFamily = "'Sarabun', sans-serif";
                 span.style.fontSize = getComputedStyle(input).fontSize;
-                span.style.color = getComputedStyle(input).color;
+                span.style.fontWeight = getComputedStyle(input).fontWeight;
                 span.style.display = 'inline-block';
-                span.style.width = '100%';
                 span.style.whiteSpace = 'pre-wrap';
-                span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
-                input.parentNode.replaceChild(span, input);
+                
+                if (input.classList.contains('calc-input')) {
+                    // Specific fix for % inputs in summary
+                    span.innerText = val ? val + '%' : '';
+                    span.style.width = 'auto';
+                    input.parentNode.replaceChild(span, input);
+                } else {
+                    span.style.width = '100%';
+                    span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
+                    input.parentNode.replaceChild(span, input);
+                }
             });
 
             clone.querySelectorAll('button').forEach(b => b.remove());
@@ -290,12 +276,31 @@
             setTimeout(() => {
                 html2canvas(clone, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = `Bill-${document.getElementById('billNo').value}.png`;
+                    link.download = `Bill-${document.getElementById('billNoDisplay').innerText}.png`;
                     link.href = canvas.toDataURL();
                     link.click();
-                    container.innerHTML = '';
+                    container.innerHTML = ''; 
                 });
             }, 100);
+        }
+
+        function saveShopInfo() {
+            localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify({
+                name: document.getElementById('shopName').value,
+                addr: document.getElementById('shopAddr').value,
+                pay: document.getElementById('paymentInfo').value,
+                collector: document.getElementById('collectorName').value
+            }));
+        }
+
+        function loadShopInfo() {
+            const c = JSON.parse(localStorage.getItem(STORAGE_KEY_CONFIG));
+            if(c){
+                document.getElementById('shopName').value = c.name || '';
+                document.getElementById('shopAddr').value = c.addr || '';
+                document.getElementById('paymentInfo').value = c.pay || '';
+                document.getElementById('collectorName').value = c.collector || '';
+            }
         }
 
         function openHistory() {
@@ -334,8 +339,6 @@
         }
 
         function deleteBill(id) { if (confirm('ลบ?')) { let h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)).filter(b => b.id !== id); localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(h)); openHistory(); } }
-        function saveShopInfo() { localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify({ name: document.getElementById('shopName').value, addr: document.getElementById('shopAddr').value, pay: document.getElementById('paymentInfo').value })); }
-        function loadShopInfo() { const c = JSON.parse(localStorage.getItem(STORAGE_KEY_CONFIG)); if(c){ document.getElementById('shopName').value=c.name||''; document.getElementById('shopAddr').value=c.addr||''; document.getElementById('paymentInfo').value=c.pay||''; } }
         function createNew() { if(confirm('สร้างใหม่?')) { currentBillId = null; document.getElementById('custName').value=''; document.getElementById('custAddr').value=''; document.getElementById('discountRate').value=''; document.getElementById('vatRate').value=''; document.getElementById('itemsBody').innerHTML=''; addRow(); generateBillNo(); calcTotal(); } }
         
         function ThaiBaht(n) {
