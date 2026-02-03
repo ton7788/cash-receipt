@@ -24,9 +24,10 @@
         .editable-input { width: 100%; border: none; background: transparent; font-family: 'Sarabun', sans-serif; outline: none; padding: 2px 0; }
         
         .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .shop-info { width: 65%; }
+        .shop-info { width: 65%; display: flex; flex-direction: column; gap: 2px; }
         .shop-name { font-size: 1.4rem; font-weight: 700; color: var(--theme-color); margin-bottom: 5px; }
-        .shop-addr { font-size: 0.85rem; color: #333; min-height: 4em; resize: none; width: 100%; display: block; overflow: hidden; white-space: pre-wrap; }
+        .shop-addr { font-size: 0.85rem; color: #333; min-height: 3em; resize: none; width: 100%; display: block; overflow: hidden; white-space: pre-wrap; }
+        .shop-phone { font-size: 0.85rem; color: #333; font-weight: 500; border-bottom: 1px dotted #ccc; }
         
         .bill-meta { width: 32%; display: flex; flex-direction: column; gap: 5px; text-align: right; }
         .meta-row { display: flex; align-items: center; justify-content: flex-end; font-size: 0.75rem; }
@@ -59,13 +60,13 @@
         .collector-input { border: none; border-bottom: 1px dotted #000; width: 180px; text-align: center; font-family: 'Sarabun'; outline: none; font-weight: 500; }
         .credit-text { text-align: center; font-size: 0.7rem; color: #999; margin-top: 40px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; }
 
+        #export-clone-container { position: absolute; left: -9999px; top: 0; }
+        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(2px); }
         .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
         .daily-summary { background: #e9ecef; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; border-left: 6px solid var(--theme-color); font-size: 0.9rem; }
         .history-card { background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        
-        #export-clone-container { position: absolute; left: -9999px; top: 0; }
-        .calc-input { width: 45px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-family: 'Sarabun'; font-weight: bold; color: var(--theme-color); }
     </style>
 </head>
 <body>
@@ -81,7 +82,8 @@
         <div class="header-section">
             <div class="shop-info">
                 <input type="text" class="editable-input shop-name" id="shopName" placeholder="ชื่อร้าน / Shop Name" onchange="saveShopInfo()">
-                <textarea class="editable-input shop-addr" id="shopAddr" placeholder="ที่อยู่และเบอร์โทร / Address & Tel" onchange="saveShopInfo()"></textarea>
+                <textarea class="editable-input shop-addr" id="shopAddr" placeholder="ที่อยู่ / Address" onchange="saveShopInfo()"></textarea>
+                <input type="text" class="editable-input shop-phone" id="shopPhone" placeholder="เบอร์โทรศัพท์ / Tel" onchange="saveShopInfo()">
             </div>
             <div class="bill-meta">
                 <div class="meta-row">
@@ -137,7 +139,7 @@
         </div>
 
         <div class="credit-text">
-            <strong>Cash receipt App | Version 1.3.6</strong><br>
+            <strong>Cash receipt App | Version 1.3.8</strong><br>
             © 2026 All Rights Reserved | Developed by Gemini & Ton7788<br>
             Contact: +66 88 897 7466
         </div>
@@ -189,7 +191,6 @@
             const vRate = parseFloat(document.getElementById('vatRate').value) || 0;
             const vAmount = (subtotal - dAmount) * (vRate / 100);
             const grand = subtotal - dAmount + vAmount;
-
             document.getElementById('subTotal').innerText = subtotal.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('discountAmount').innerText = dAmount.toLocaleString(undefined, {minimumFractionDigits:2});
             document.getElementById('vatAmount').innerText = vAmount.toLocaleString(undefined, {minimumFractionDigits:2});
@@ -204,11 +205,7 @@
             const now = new Date();
             const prefix = `${(now.getFullYear()+543).toString().slice(-2)}${String(now.getMonth()+1).padStart(2,'0')}`;
             const monthBills = h.filter(b => b.billNo.startsWith(prefix));
-            let nextSeq = 1;
-            if (monthBills.length > 0) {
-                const sorted = monthBills.sort((a,b) => b.billNo.localeCompare(a.billNo));
-                nextSeq = parseInt(sorted[0].billNo.split('-')[1]) + 1;
-            }
+            let nextSeq = monthBills.length > 0 ? parseInt(monthBills.sort((a,b) => b.billNo.localeCompare(a.billNo))[0].billNo.split('-')[1]) + 1 : 1;
             const res = `${prefix}-${String(nextSeq).padStart(3, '0')}`;
             document.getElementById('billNo').value = res;
             document.getElementById('billNoDisplay').innerText = res;
@@ -223,12 +220,9 @@
                 const price = r.querySelector('.price').value;
                 if(qty || desc) items.push({ qty, desc, price, total: r.querySelector('.row-total').innerText });
             });
-            const billData = { 
-                id: currentBillId || Date.now(), billNo: document.getElementById('billNo').value, date: document.getElementById('billDate').value, custName: document.getElementById('custName').value, custAddr: document.getElementById('custAddr').value, items: items, discountRate: document.getElementById('discountRate').value, vatRate: document.getElementById('vatRate').value, total: total 
-            };
+            const billData = { id: currentBillId || Date.now(), billNo: document.getElementById('billNo').value, date: document.getElementById('billDate').value, custName: document.getElementById('custName').value, custAddr: document.getElementById('custAddr').value, items: items, discountRate: document.getElementById('discountRate').value, vatRate: document.getElementById('vatRate').value, total: total };
             let h = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY)) || [];
-            if (currentBillId) { h = h.map(b => b.id === currentBillId ? billData : b); } 
-            else { h.unshift(billData); }
+            if (currentBillId) { h = h.map(b => b.id === currentBillId ? billData : b); } else { h.unshift(billData); }
             localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(h));
             currentBillId = billData.id; alert('บันทึกสำเร็จ!');
         }
@@ -238,7 +232,6 @@
             const container = document.getElementById('export-clone-container');
             container.innerHTML = '';
             const clone = source.cloneNode(true);
-            
             ['discountLine', 'vatLine'].forEach(id => {
                 const line = clone.querySelector(`#${id}`);
                 if(line) {
@@ -249,7 +242,6 @@
                     line.innerHTML = `<span class="summary-label-box">${label} ${rateVal ? rateVal + '%' : ''}</span><span class="summary-value">${amount}</span>`;
                 }
             });
-
             clone.querySelectorAll('input, textarea').forEach(input => {
                 if(input.type === 'hidden' || input.id === 'billNo') { input.remove(); return; }
                 const span = document.createElement('span');
@@ -261,14 +253,11 @@
                 span.style.width = '100%';
                 span.style.whiteSpace = 'pre-wrap';
                 span.style.textAlign = getComputedStyle(input).textAlign;
-                
                 span.innerText = (input.type === 'date' && val) ? new Date(val).toLocaleDateString('th-TH') : val;
                 input.parentNode.replaceChild(span, input);
             });
-
             clone.querySelectorAll('button').forEach(b => b.remove());
             container.appendChild(clone);
-
             setTimeout(() => {
                 html2canvas(clone, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
                     const link = document.createElement('a');
@@ -284,6 +273,7 @@
             localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify({
                 name: document.getElementById('shopName').value,
                 addr: document.getElementById('shopAddr').value,
+                phone: document.getElementById('shopPhone').value,
                 pay: document.getElementById('paymentInfo').value,
                 collector: document.getElementById('collectorName').value
             }));
@@ -294,6 +284,7 @@
             if(c){
                 document.getElementById('shopName').value = c.name || '';
                 document.getElementById('shopAddr').value = c.addr || '';
+                document.getElementById('shopPhone').value = c.phone || '';
                 document.getElementById('paymentInfo').value = c.pay || '';
                 document.getElementById('collectorName').value = c.collector || '';
             }
@@ -337,7 +328,6 @@
             if (!n || n == 0) return "ศูนย์บาทถ้วน";
             const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
             const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
-
             function convert(numberStr) {
                 let res = "";
                 for (let i = 0; i < numberStr.length; i++) {
@@ -351,17 +341,11 @@
                 }
                 return res;
             }
-
             let s = n.toFixed(2).split('.');
             let bahtText = convert(s[0]);
             let satangText = convert(s[1]);
-
             let result = (bahtText || "ศูนย์") + "บาท";
-            if (parseInt(s[1]) === 0) {
-                result += "ถ้วน";
-            } else {
-                result += satangText + "สตางค์";
-            }
+            if (parseInt(s[1]) === 0) { result += "ถ้วน"; } else { result += satangText + "สตางค์"; }
             return result;
         }
 
